@@ -12,7 +12,7 @@ install:
   - python setup.py develop
   - pip install nose coverage coveralls
 
-before-script:
+before_script:
   - cp test-settings.example.json test-settings.json
 
 script:
