@@ -8,12 +8,13 @@ branches:
   only:
     - master
 
-# command to install requirements
 install:
-  - python setup.py -q install
+  - python setup.py develop
   - pip install nose coverage coveralls
 
-# command to run tests, e.g. python setup.py test
+before-script:
+  - cp test-settings.example.json test-settings.json
+
 script:
   - nosetests --with-coverage --cover-package=netengine
 
