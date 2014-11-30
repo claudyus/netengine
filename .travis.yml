@@ -10,7 +10,7 @@ branches:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install qemu curl
+  - sudo apt-get install qemu-system-arm curl
 
 install:
   - python setup.py develop
