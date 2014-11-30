@@ -8,12 +8,19 @@ branches:
   only:
     - master
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install qemu curl
+
 install:
   - python setup.py develop
   - pip install nose coverage coveralls
 
 before_script:
   - cp test-settings.example.json test-settings.json
+  - curl http://downloads.openwrt.org/barrier_breaker/14.07/x86/generic/openwrt-x86-generic-combined-ext4.img.gz
+  - qemu-system-x86_64 -M q35 -drive file=openwrt-x86_64-combined-ext4.img,id=d0,if=none,bus=0,unit=0 -device ide-hd,drive=d0,bus=ide.0
+
 
 script:
   - nosetests --with-coverage --cover-package=netengine
