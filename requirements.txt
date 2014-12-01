@@ -4,3 +4,4 @@ ipaddress
 cached-property
 argparse
 mechanize
+git+http://github.com/claudyus/MockSSH.git@master#egg=MockSSH

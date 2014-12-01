@@ -1,21 +1,39 @@
 import unittest
+import MockSSH
 
 from netengine.backends.ssh import OpenWRT
 
 from ..settings import settings
+
+from mock_openwrt import commands
 
 
 __all__ = ['TestSSHOpenWRT']
 
 
 class TestSSHOpenWRT(unittest.TestCase):
+
+    _thread = None
     
+    @classmethod
+    def setUpClass(cls):
+        users = {'root': 'pass'}
+        self._thread = MockSSH.threadedServer(commands,
+                prompt="$",
+                interface="localhost",
+                port=9856,
+                **users)
+
+    @classmethod
+    def tearDownClass(cls):
+        self._thread.stop()
+
     def setUp(self):
         self.host = settings['openwrt-ssh']['host']
         self.username = settings['openwrt-ssh']['username']
         self.password = settings['openwrt-ssh']['password']
         self.port = settings['openwrt-ssh'].get('port', 22)
-        
+
         self.device = OpenWRT(self.host, self.username, self.password, self.port)
         self.device.connect()
     
@@ -27,8 +45,8 @@ class TestSSHOpenWRT(unittest.TestCase):
         device.olsr
         device.disconnect()
     
-    def test_wireless_mode(self):
-        self.assertTrue(self.device.wireless_mode in ['ap', 'sta'])
+#    def test_wireless_mode(self):
+#        self.assertTrue(self.device.wireless_mode in ['ap', 'sta'])
         
     def test_RAM_total(self):
         self.assertTrue(type(self.device.RAM_total) == int)

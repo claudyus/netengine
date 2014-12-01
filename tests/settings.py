@@ -1,3 +1,3 @@
 import json
 
-settings = json.loads(open('./test-settings.json').read())
+settings = json.loads(open('./tests/test.json').read())

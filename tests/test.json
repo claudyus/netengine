@@ -1,0 +1,8 @@
+{
+    "openwrt-ssh": {
+        "host": "localhost",
+        "port": 9856,
+        "username": "root",
+        "password": "pass"
+    }
+}
