@@ -7,12 +7,15 @@ __all__ = ['Debian']
 
 from netengine.backends.ssh import SSH
 import json
+import re
 
 
 class Debian(SSH):
     """
     Debian SSH backend
     """
+
+    _ifaces = None
 
     def __str__(self):
         """ print a human readable object description """
@@ -56,11 +59,22 @@ class Debian(SSH):
 
     @property
     def interfaces_to_dict(self):
-        out = self.run("ip link | grep '^[0-9]' | cut -d : -f 2 | tr -d ' ':")
-        ifaces = []
-        for line in out.split('\n'):
-            ifaces.append(line)
+        ifconfig = self.run("ifconfig")
+        ifaces = ()
+        for paragraph in ifconfig.split('\n\n'):
+            mo = re.search(r'^(?P<name>\w+|\w+:\w+)\s+' +
+                            r'Link encap:(?P<type>\S+)\s+' +
+                            r'(HWaddr\s+(?P<mac>\S+))?' +
+                            r'(\s+inet addr:(?P<address>\S+))?' +
+                            r'(\s+Bcast:(?P<broadcast_address>\S+)\s+)?' +
+                            r'(Mask:(?P<mask>\S+))?' +
+                            r'(MTU:(?P<mtu>\S+))?',
+                            paragraph, re.MULTILINE )
+            if mo:
+                info = mo.groupdict('')
+                ifaces.append((info['name'], info))
         return ifaces
+
 
     @property
     def RAM_total(self):
@@ -80,9 +94,9 @@ class Debian(SSH):
         """
         returns a string representing the manufacturer of the device
         """
-        return None
+        return None # FIXME
         # returns first not None value
-        for interface in self.ubus_dict.keys(): #FIXME
+        for interface in self.interfaces_to_dict():
             # ignore loopback interface
             if interface != "lo":
                 mac_address = self.ubus_dict[interface]['macaddr']
