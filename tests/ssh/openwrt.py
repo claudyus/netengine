@@ -7,6 +7,7 @@ from ..settings import settings
 
 from mock_openwrt import commands
 
+from twisted.internet import reactor
 
 __all__ = ['TestSSHOpenWRT']
 
@@ -17,8 +18,8 @@ class TestSSHOpenWRT(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        users = {'root': 'pass'}
-        self._thread = MockSSH.threadedServer(commands,
+        users = {'root': 'password'}
+        cls._thread = MockSSH.threadedServer(commands,
                 prompt="$",
                 interface="localhost",
                 port=9856,
@@ -26,7 +27,8 @@ class TestSSHOpenWRT(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        self._thread.stop()
+        reactor.callFromThread(reactor.stop)
+
 
     def setUp(self):
         self.host = settings['openwrt-ssh']['host']
